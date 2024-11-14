@@ -19,11 +19,14 @@ model User {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  Wallet Wallet[]
 }
 
 model Wallet {
   id        String   @id @default(uuid())
   user_id   String
+  user      User     @relation(fields: [user_id], references: [id])
   tag       String?
   chain     String
   address   String   @unique

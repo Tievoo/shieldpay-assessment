@@ -1,43 +1,53 @@
 import bcrypt from "bcrypt";
-import { decode, verify, sign } from "jsonwebtoken";
+import { sign } from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
 import { prisma } from "../utils/prisma";
 import { isEmailValid } from "../utils/isEmailValid";
+import { ErrorType, PrismaError, PrismaErrorCodes, prismaErrorHandler, prismaErrorMap } from "../middleware/errorHandler";
 
 
 export const signup = async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
     
     if (!isEmailValid(email) || !password) {
-        return next(new Error("Invalid request"));
+        return next(ErrorType.InvalidRequest);
     }
-
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await prisma.user.create({
-        data: {
-            email,
-            password: hashedPassword,
-        },
-    });
+    try {
+        const user = await prisma.user.create({
+            data: {
+                email,
+                password: hashedPassword,
+            },
+        });
 
-    res.status(201).json({ message: "User created successfully", user });
+        const token = sign({ id: user.id }, process.env.JWT_SECRET as string, { expiresIn: "1h" });
+
+        res.status(201).json({ message: "User created successfully", token });
+    } catch (error) {
+        return next(prismaErrorHandler(error as PrismaError));
+    }
 }
 
 export const signin = async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
+
+    if (!email || !password) {
+        return next(ErrorType.InvalidRequest);
+    }
 
     const user = await prisma.user.findUnique({
         where: { email },
     }); 
 
     if (!user) {
-        return next(new Error("Invalid credentials"));
+        return next(ErrorType.NotFound);
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-        return next(new Error("Invalid credentials"));
+        return next(ErrorType.InvalidCredentials);
     }
 
     const token = sign({ id: user.id }, process.env.JWT_SECRET as string, { expiresIn: "1h" });

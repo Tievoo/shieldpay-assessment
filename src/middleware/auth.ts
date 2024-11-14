@@ -1,20 +1,21 @@
 import { Request, Response, NextFunction } from "express";
 import { verify } from "jsonwebtoken";
+import { ErrorType } from "./errorHandler";
 
 interface JwtPayload {
     id: string;
 }
 
-export const authenticateToken = async (
+export const auth = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    const authHeader = req.headers["Authorization"] as string;
+    const authHeader = req.headers["authorization"] as string;
     const token = authHeader && authHeader.split(" ")[1];
 
     if (!token) {
-        return next(new Error("Unauthorized"));
+        return next(ErrorType.Unauthorized);
     }
 
     try {
@@ -22,6 +23,6 @@ export const authenticateToken = async (
         req.body.userId = decoded.id;
         next();
     } catch (error) {
-        return next(new Error("Unauthorized"));
+        return next(ErrorType.Unauthorized);
     }
 };
