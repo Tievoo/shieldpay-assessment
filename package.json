@@ -1,0 +1,30 @@
+{
+  "name": "shieldpay-assessment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "swc src -d dist --config-file=./.swcrc",
+    "watch": "swc src -d dist --config-file=./.swcrc --watch",
+    "dev": "concurrently \"yarn watch\" \"nodemon dist/src/index.js\"",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@swc/cli": "^0.5.0",
+    "concurrently": "^9.1.0",
+    "express": "^4.21.1",
+    "nodemon": "^3.1.7",
+    "prisma": "^5.22.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "@swc/core": "^1.9.2",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.9.0",
+    "dotenv": "^16.4.5",
+    "typescript": "^5.6.3"
+  }
+}
