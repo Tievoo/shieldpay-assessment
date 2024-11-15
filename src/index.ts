@@ -14,6 +14,10 @@ app.use(express.json());
 app.use(authRoutes);
 app.use("/wallets", walletRoutes);
 
+app.get("/", (req, res) => {
+  res.send("server ok");
+});
+
 app.use(errorHandler);
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);

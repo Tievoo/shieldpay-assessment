@@ -4,7 +4,7 @@ A Node.js backend application with authentication and wallet functionality for t
 
 ## Prerequisites
 
-- Node.js and yarn installed
+- Node.js `>=18` (currently using `18.18.0`) and `yarn` installed
 - PostgreSQL database
 
 ## Setup
@@ -13,7 +13,7 @@ A Node.js backend application with authentication and wallet functionality for t
 2. Create a `.env` file with the following variables:
    ```
    DATABASE_URL=postgresql://user:password@localhost:5432/dbname
-   PORT=3000
+   PORT=3000 //or any
    JWT_SECRET=your_jwt_secret
    ```
 3. Run setup command:
@@ -44,7 +44,7 @@ Register a new user
   - `password`: string
 - Response:
   - `token`: JWT token
-  - `user`: User object (id, email)
+  - `message`: Success message
 
 #### POST `/signin`
 Sign in with existing credentials
@@ -53,6 +53,7 @@ Sign in with existing credentials
   - `password`: string
 - Response:
   - `token`: JWT token
+  - `message`: Success message
 
 ### Wallets
 
@@ -61,10 +62,11 @@ Create a new wallet (requires authentication)
 - Request Headers:
   - `Authorization`: Bearer token
 - Request Body:
-  - `name`: string
-  - `balance`: number (optional, defaults to 0)
+  - `tag`: string?
+  - `address`: string
+  - `chain`: string
 - Response:
-  - Wallet object (id, name, balance, userId)
+  - Success or error message
 
 #### GET `/wallets`
 Get all wallets for authenticated user
@@ -80,34 +82,36 @@ Get specific wallet by ID
 - URL Parameters:
   - `id`: Wallet ID
 - Response:
-  - Wallet object (id, name, balance, userId)
-#### PUT /wallets/:id
+  - Wallet object (id, chain, tag, address, userId)
+#### PUT `/wallets/:id`
 Update wallet balance
 - Request Headers:
   - `Authorization`: Bearer token
 - URL Parameters:
   - `id`: Wallet ID
 - Request Body:
-  - `balance`: number
+  - `tag`: string?
+  - `address`: string
+  - `chain`: string
 - Response:
-  - Updated wallet object
+  - Success or error message
 
-#### DELETE /wallets/:id
+#### DELETE `/wallets/:id`
 Delete a wallet
 - Request Headers:
   - `Authorization`: Bearer token
 - URL Parameters:
   - `id`: Wallet ID
 - Response:
-  - Success message
+  - Success or error message
 
 ### Error Responses
 All endpoints may return the following error responses:
-- 400: Invalid Request
-- 401: Unauthorized/Invalid credentials
-- 404: Not Found
-- 409: Resource already exists
-- 500: Internal Server Error
+- `400`: Invalid Request
+- `401`: Unauthorized/Invalid credentials
+- `404`: Not Found
+- `409`: Resource (User/Wallet) already exists
+- `500`: Internal Server Error
 
 
 
