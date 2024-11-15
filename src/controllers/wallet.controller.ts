@@ -36,12 +36,8 @@ export const createWallet = async (req: Request, res: Response, next: NextFuncti
     const userId = req.body.userId;
     const { tag, chain, address } = req.body;
 
-    if (!chain || !address) {
-        return next(ErrorType.InvalidRequest);
-    }
-
     try {
-        const wallet = await prisma.wallet.create({
+        await prisma.wallet.create({
             data: { tag, chain, address, user_id: userId }
         });
 
